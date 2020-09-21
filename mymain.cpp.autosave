@@ -1,0 +1,57 @@
+#include "mymain.h"
+#include "ui_mymain.h"
+#include <QDir>
+#include <QDebug>
+#include <QFile>
+#include <QFileDialog>
+#include <QTextStream>
+#include <QTextCodec>
+MyMain::MyMain(QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MyMain)
+{
+    ui->setupUi(this);
+    QFile *file;
+
+}
+
+MyMain::~MyMain()
+{
+    delete ui;
+}
+
+
+void MyMain::on_pushButton_clicked()
+{
+    QTextStream in(file);
+    
+    if(!in.atEnd()) {
+        QByteArray line = file->readAll();
+        ui->plainTextEdit->insertPlainText (line);
+    }
+    QString content = ui->plainTextEdit->toPlainText ();
+    in << content;
+    file->flush();
+    file->close ();
+
+}
+
+void MyMain::on_pushButton_2_clicked()
+{
+    QString filter("Text files (*.txt);;Object File (*.obj);;Polygon files (*.ply)");
+    QFileDialog dialog(this);
+    dialog.setViewMode(QFileDialog::Detail);
+    QString fileName = QFileDialog::getOpenFileName(this,
+                                                    tr("File Obj"), "./", filter);
+    QFile *file = new QFile(fileName);
+    if (!file->open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+    QTextStream in(file);
+    if(!in.atEnd()) {
+        QByteArray line = file->readAll();
+        ui->plainTextEdit->insertPlainText (line);
+    }
+    else {
+        qDebug() << "chua ton tai file";
+    }
+}
